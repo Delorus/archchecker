@@ -16,8 +16,7 @@ public final class PlantUMLSerializer {
         this.infos = infos;
     }
 
-    @Override
-    public String toString() {
+    public String serialize() {
         var diagram = PlantUMLBuilder
                 .newObjectDiagram()
                 .start();

@@ -29,7 +29,7 @@ public final class Main {
 
         List<ModuleInfo> infos = toModuleInfos(stabilities);
         PlantUMLSerializer serializer = new PlantUMLSerializer(infos);
-        Files.writeString(Paths.get("./module_infos.puml"), serializer.toString(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        Files.writeString(Paths.get("./module_infos.puml"), serializer.serialize(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 
         /*
         fout-- count of import in component

@@ -8,7 +8,7 @@
     <artifactId>arch-checker</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-<!--    <packaging>jlink</packaging>-->
+    <!--    <packaging>jlink</packaging>-->
 
     <build>
         <plugins>
@@ -67,12 +67,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>17.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.3.0</version>
@@ -84,6 +78,28 @@
             <version>5.3.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- http://plantuml.com/ru/api -->
+<!--        <dependency>-->
+<!--            <groupId>net.sourceforge.plantuml</groupId>-->
+<!--            <artifactId>plantuml</artifactId>-->
+<!--            <version>8059</version>-->
+<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/javax.script/script-api -->
+<!--        <dependency>-->
+<!--            <groupId>javax.script</groupId>-->
+<!--            <artifactId>script-api</artifactId>-->
+<!--            <version>1.0-osgi</version>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/javax.script/script -->
+<!--        <dependency>-->
+<!--            <groupId>javax.script</groupId>-->
+<!--            <artifactId>script</artifactId>-->
+<!--            <version>1.0.2.xdm</version>-->
+<!--        </dependency>-->
+
+
     </dependencies>
 
 
