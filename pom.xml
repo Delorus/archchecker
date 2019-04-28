@@ -79,6 +79,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.57</version>
+        </dependency>
+
         <!-- http://plantuml.com/ru/api -->
 <!--        <dependency>-->
 <!--            <groupId>net.sourceforge.plantuml</groupId>-->

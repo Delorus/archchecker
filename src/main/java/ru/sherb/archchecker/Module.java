@@ -54,12 +54,16 @@ public final class Module {
         return dependencies;
     }
 
+    public void load() {
+        this.classes = loadClasses();
+    }
+
     private void ensureLoad() {
         if (classes != null) {
             return;
         }
 
-        classes = loadClasses();
+        load();
     }
 
     private List<Class> loadClasses() {
@@ -153,5 +157,58 @@ public final class Module {
     @Override
     public int hashCode() {
         return Objects.hash(path, name);
+    }
+
+    static final class SerializeAgent {
+        String path;
+        String name;
+        List<Class.SerializeAgent> classes;
+
+        static SerializeAgent from(Module module) {
+            var agent = new SerializeAgent();
+
+            agent.name = module.name();
+            agent.path = module.path.toString();
+            agent.classes = module.classes
+                    .stream()
+                    .map(Class.SerializeAgent::from)
+                    .collect(Collectors.toList());
+
+            return agent;
+        }
+
+        Module toModule() {
+            var module = new Module(Path.of(path));
+            module.classes = classes
+                    .stream()
+                    .map(jsonClass -> jsonClass.toClass(module))
+                    .collect(Collectors.toList());
+
+            return module;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<Class.SerializeAgent> getClasses() {
+            return classes;
+        }
+
+        public void setClasses(List<Class.SerializeAgent> classes) {
+            this.classes = classes;
+        }
     }
 }

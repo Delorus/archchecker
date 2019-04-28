@@ -76,4 +76,47 @@ public final class Class {
             return new Class(module, pkg, name, imports);
         }
     }
+
+    static final class SerializeAgent {
+        String fullName;
+        List<String> imports;
+
+        static SerializeAgent from(Class cls) {
+            var agent = new SerializeAgent();
+
+            agent.fullName = cls.fullName().toString();
+            agent.imports = cls.imports
+                    .stream()
+                    .map(QualifiedName::toString)
+                    .collect(Collectors.toList());
+
+            return agent;
+        }
+
+        Class toClass(Module module) {
+            var fullName = new QualifiedName(this.fullName);
+            var imports = this.imports
+                    .stream()
+                    .map(QualifiedName::new)
+                    .collect(Collectors.toSet());
+
+            return new Class(module, fullName.pkg(), fullName.simpleName(), imports);
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
+
+        public List<String> getImports() {
+            return imports;
+        }
+
+        public void setImports(List<String> imports) {
+            this.imports = imports;
+        }
+    }
 }

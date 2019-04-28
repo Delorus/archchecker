@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,9 +21,10 @@ public final class Main {
         validate(args);
 
         Path root = Paths.get(args[0]);
-        List<Module> modules = getAllPaths(root)
-                .flatMap(Main::findModule)
-                .collect(Collectors.toList());
+        List<Module> modules = getFromCacheOrLoadModules(root);
+
+        var jsonSerializer = new ModuleToJSONSerializer();
+        jsonSerializer.saveAsJSON(root.resolve(".module_infos.json"), modules);
 
         ModuleAnalyst analyst = new ModuleAnalyst(modules);
         Map<Module, Double> stabilities = analyst.countModulesStability();
@@ -36,6 +38,45 @@ public final class Main {
         fin -- count of dependency from this component
         fout / (fout + fin)
         */
+    }
+
+    private static List<Module> getFromCacheOrLoadModules(Path root) throws IOException {
+        var modules = loadFromCache(root);
+
+        if (modules.isEmpty()) {
+            modules = loadFromDir(root);
+        }
+
+        return modules;
+    }
+
+    private static List<Module> loadFromCache(Path root) throws IOException {
+        try (var caches = Files.find(root, 1,
+                (path, basicFileAttributes) -> path.getFileName().toString().equals(".module_infos.json"))) {
+
+            var cache = caches.findAny();
+
+            if (cache.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return new ModuleToJSONSerializer().loadFrom(cache.get());
+        }
+    }
+
+    private static List<Module> loadFromDir(Path root) throws IOException {
+        return getAllPaths(root)
+                .flatMap(Main::findModule)
+                .peek(Module::load)
+                .collect(Collectors.toList());
+    }
+
+    private static Stream<String> tryGetLines(Path path) {
+        try {
+            return Files.lines(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void validate(String[] args) {

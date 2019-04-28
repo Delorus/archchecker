@@ -81,4 +81,5 @@ fabric.properties
 hs_err_pid*
 
 *.puml
+*.json
 test-data
