@@ -1,8 +1,5 @@
 package ru.sherb.archchecker;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +21,7 @@ public final class Module {
 
     private List<Class> classes;
 
-    public Module(@NotNull Path path) {
+    public Module(Path path) {
         this.path = path;
         this.name = path.getFileName().toString();
     }
@@ -79,7 +76,6 @@ public final class Module {
         }
     }
 
-    @NotNull
     private Class loadClass(Path path) {
         try (var lines = Files.lines(path)) {
             var builder = Class
@@ -119,32 +115,26 @@ public final class Module {
         return isPackage(line) || isImport(line);
     }
 
-    @Contract(pure = true)
-    private boolean isImport(@NotNull String line) {
+    private boolean isImport(String line) {
         return line.startsWith("import");
     }
 
-    @Contract(pure = true)
-    private boolean isPackage(@NotNull String line) {
+    private boolean isPackage(String line) {
         return line.startsWith("package");
     }
 
-    @NotNull
     private String trimPackage(String line) {
         return trim("package", line);
     }
 
-    @NotNull
     private String trimImport(String line) {
         return trim("import", line);
     }
 
-    @NotNull
-    private String trim(@NotNull String prefix, @NotNull String line) {
+    private String trim(String prefix, String line) {
         return line.substring(prefix.length(), line.length() - 1).trim();
     }
 
-    @Contract(value = "null -> false", pure = true)
     @Override
     public boolean equals(Object o) {
         if (this == o) {

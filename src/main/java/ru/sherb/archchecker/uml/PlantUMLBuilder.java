@@ -1,22 +1,15 @@
 package ru.sherb.archchecker.uml;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
 /**
  * @author maksim
  * @since 27.04.19
  */
 public abstract class PlantUMLBuilder<T extends PlantUMLBuilder> {
 
-    @NotNull
-    @Contract(" -> new")
     public static PlantUMLBuilder<ComponentBuilder> newComponentDiagram() {
         return new ComponentBuilder();
     }
 
-    @NotNull
-    @Contract(" -> new")
     public static PlantUMLBuilder<ObjectBuilder> newObjectDiagram() {
         return new ObjectBuilder();
     }

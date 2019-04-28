@@ -1,8 +1,5 @@
 package ru.sherb.archchecker.uml;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +21,16 @@ public final class Object implements Renderable {
         this.name = name;
     }
 
-    @Contract("_ -> this")
     public Object alias(String alias) {
         this.alias = alias;
         return this;
     }
 
-    @Contract("_ -> this")
     public Object addField(String name) {
         fields.add(new Field(Modifier.NONE, name));
         return this;
     }
 
-    @Contract("_, _ -> this")
     public Object addField(Modifier mod, String name) {
         fields.add(new Field(mod, name));
         return this;
@@ -48,7 +42,7 @@ public final class Object implements Renderable {
     }
 
     @Override
-    public void renderTo(@NotNull StringBuilder builder) {
+    public void renderTo(StringBuilder builder) {
         validate();
 
         builder.append("object");
