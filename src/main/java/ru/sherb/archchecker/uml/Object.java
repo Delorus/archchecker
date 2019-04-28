@@ -7,7 +7,7 @@ import java.util.List;
  * @author maksim
  * @since 27.04.19
  */
-public final class Object implements Renderable {
+public final class Object {
 
     private final PlantUMLBuilder.ObjectBuilder parent;
 
@@ -41,8 +41,7 @@ public final class Object implements Renderable {
         return parent;
     }
 
-    @Override
-    public void renderTo(StringBuilder builder) {
+    private void renderTo(StringBuilder builder) {
         validate();
 
         builder.append("object");

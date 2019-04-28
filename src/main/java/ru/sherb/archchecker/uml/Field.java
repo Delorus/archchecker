@@ -4,7 +4,7 @@ package ru.sherb.archchecker.uml;
  * @author maksim
  * @since 27.04.19
  */
-public final class Field implements Renderable {
+public final class Field {
 
     private final Modifier mod;
     private final String name;
@@ -17,7 +17,6 @@ public final class Field implements Renderable {
         this.name = name;
     }
 
-    @Override
     public void renderTo(StringBuilder builder) {
         mod.renderTo(builder);
         builder.append(name);

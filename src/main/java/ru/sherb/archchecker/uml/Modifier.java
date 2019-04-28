@@ -1,6 +1,6 @@
 package ru.sherb.archchecker.uml;
 
-public enum Modifier implements Renderable {
+public enum Modifier {
     NONE(""),
     PUBLIC("+"),
     PRIVATE("-"),
@@ -12,7 +12,6 @@ public enum Modifier implements Renderable {
         this.sign = sign;
     }
 
-    @Override
     public void renderTo(StringBuilder builder) {
         builder.append(sign);
     }

@@ -32,12 +32,6 @@ public final class Main {
         List<ModuleInfo> infos = toModuleInfos(stabilities);
         PlantUMLSerializer serializer = new PlantUMLSerializer(infos);
         Files.writeString(Paths.get("./module_infos.puml"), serializer.serialize(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-
-        /*
-        fout-- count of import in component
-        fin -- count of dependency from this component
-        fout / (fout + fin)
-        */
     }
 
     private static List<Module> getFromCacheOrLoadModules(Path root) throws IOException {
@@ -69,14 +63,6 @@ public final class Main {
                 .flatMap(Main::findModule)
                 .peek(Module::load)
                 .collect(Collectors.toList());
-    }
-
-    private static Stream<String> tryGetLines(Path path) {
-        try {
-            return Files.lines(path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static void validate(String[] args) {
@@ -116,7 +102,3 @@ public final class Main {
                           .collect(Collectors.toList());
     }
 }
-
-/*
-module;full.fullName.class;dependency
- */

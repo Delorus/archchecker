@@ -28,10 +28,6 @@ public final class Class {
         return new ClassBuilder();
     }
 
-    public String mainPackage() {
-        return pkg.mainPackage();
-    }
-
     public QualifiedName fullName() {
         return pkg.newWith(name);
     }
