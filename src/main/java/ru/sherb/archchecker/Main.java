@@ -88,6 +88,7 @@ public final class Main {
         }
     }
 
+    //TODO нужно что-то делать с парент помом, там нет исходников, а файл есть и мы падаем
     private static boolean isBuildFile(Path cur) {
         return cur.endsWith("build.gradle.kts") || cur.endsWith("pom.xml") || cur.endsWith("build.gradle");
     }

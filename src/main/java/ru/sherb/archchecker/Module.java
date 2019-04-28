@@ -2,11 +2,14 @@ package ru.sherb.archchecker;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -73,21 +76,26 @@ public final class Module {
             return walker
                     .filter(p -> p.getFileName().toString().endsWith(".java"))
                     .map(this::loadClass)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .collect(Collectors.toList());
 
+        } catch (NoSuchFileException e) {
+            System.err.println(e.getMessage());
+            return Collections.emptyList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Class loadClass(Path path) {
+    private Optional<Class> loadClass(Path path) {
         try (var lines = Files.lines(path)) {
             var builder = Class
                     .builder()
                     .module(this)
                     .name(trimNameFromFile(path.getFileName()));
 
-            return lines
+            var cls = lines
                     .filter(this::isPackageOrImport)
                     .sequential()
                     .reduce(builder,
@@ -102,6 +110,11 @@ public final class Module {
                             (b, __) -> b) // work only in sequential stream
                     .build();
 
+            return Optional.of(cls);
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("In path: " + path + " " + e.getMessage());
+            return Optional.empty();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -157,6 +170,19 @@ public final class Module {
     @Override
     public int hashCode() {
         return Objects.hash(path, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Module{"
+                + path
+                + ", classes=["
+                + Objects.requireNonNullElse(classes, Collections.<Class>emptyList())
+                         .stream()
+                         .map(Class::fullName)
+                         .map(QualifiedName::toString)
+                         .collect(Collectors.joining("; "))
+                + "]}";
     }
 
     static final class SerializeAgent {
