@@ -64,7 +64,6 @@
         </plugins>
     </build>
 
-
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -105,8 +104,6 @@
 <!--            <artifactId>script</artifactId>-->
 <!--            <version>1.0.2.xdm</version>-->
 <!--        </dependency>-->
-
-
     </dependencies>
 
 
