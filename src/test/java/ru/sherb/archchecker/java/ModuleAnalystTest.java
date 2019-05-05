@@ -1,5 +1,6 @@
 package ru.sherb.archchecker.java;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.sherb.archchecker.analysis.Class;
@@ -9,17 +10,18 @@ import ru.sherb.archchecker.analysis.ModuleAnalyst;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author maksim
  * @since 04.05.19
  */
-class ModuleAnalystTest {
+public class ModuleAnalystTest {
 
     @Test
     @DisplayName("два модуля, первый зависит от второго")
-    void twoModuleFirstDependsToSecond() {
+    public void twoModuleFirstDependsToSecond() {
         // setup
         var first = createModuleWithClass("first", "first.Class1");
         var second = createModuleWithClass("second", "second.Class2");
@@ -37,7 +39,7 @@ class ModuleAnalystTest {
 
     @Test
     @DisplayName("три модуля, первый зависит от двух других")
-    void threeModulesOneDependsToTwo() {
+    public void threeModulesOneDependsToTwo() {
         // setup
         var first = createModuleWithClass("first", "first.Class1");
         var second = createModuleWithClass("second", "second.Class2");
@@ -58,7 +60,7 @@ class ModuleAnalystTest {
 
     @Test
     @DisplayName("три модуля, которые последовательно зависят друг от друга")
-    void threeModulesSequenceDependency() {
+    public void threeModulesSequenceDependency() {
         // setup
         var first = createModuleWithClass("first", "first.Class1");
         var second = createModuleWithClass("second", "second.Class2");
@@ -75,6 +77,12 @@ class ModuleAnalystTest {
         assertEquals(1.0, (double) modulesStability.get(first));
         assertEquals(0.5, (double) modulesStability.get(second));
         assertEquals(0.0, (double) modulesStability.get(third));
+    }
+
+    @Test
+    @Disabled
+    public void wrongTest() {
+        assertTrue(false);
     }
 
     private Module createModuleWithClass(String moduleName, String className) {

@@ -2,8 +2,6 @@ package ru.sherb.archchecker.uml;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.sherb.archchecker.uml.Modifier;
-import ru.sherb.archchecker.uml.PlantUMLBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author maksim
  * @since 27.04.19
  */
-class ObjectBuilderTest {
+public class ObjectBuilderTest {
 
     @Test
     @DisplayName("создание простого объекта")
-    void simpleObjectDiagram() {
+    public void simpleObjectDiagram() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
@@ -33,7 +31,7 @@ class ObjectBuilderTest {
 
     @Test
     @DisplayName("создание объекта с псевдонимом")
-    void objectDiagramWithAlias() {
+    public void objectDiagramWithAlias() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
@@ -51,7 +49,7 @@ class ObjectBuilderTest {
 
     @Test
     @DisplayName("если создать объект с именем, состоящим из нескольких слов без псевдонима, то будет ошибка")
-    void objectDiagramWithoutAliasAndCompositeName() {
+    public void objectDiagramWithoutAliasAndCompositeName() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
@@ -66,7 +64,7 @@ class ObjectBuilderTest {
 
     @Test
     @DisplayName("создание сложного объекта с разнотипными полями")
-    void objectDiagramWithSeveralFields() {
+    public void objectDiagramWithSeveralFields() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
@@ -95,7 +93,7 @@ class ObjectBuilderTest {
 
     @Test
     @DisplayName("создание сложного объекта с псевдонимом")
-    void objectDiagramWithFieldAndAlias() {
+    public void objectDiagramWithFieldAndAlias() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
@@ -119,7 +117,7 @@ class ObjectBuilderTest {
 
     @Test
     @DisplayName("объектная диаграмма с простой вертикальной связью")
-    void objectDiagramWithSimpleVerticalDependency() {
+    public void objectDiagramWithSimpleVerticalDependency() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
@@ -151,7 +149,7 @@ class ObjectBuilderTest {
 
     @Test
     @DisplayName("объектная диаграмма с простой горизонтальной связью")
-    void objectDiagramWithSimpleHorizontalDependency() {
+    public void objectDiagramWithSimpleHorizontalDependency() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +

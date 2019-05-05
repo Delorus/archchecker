@@ -19,11 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author maksim
  * @since 05.05.19
  */
-class DependencyGraphCreatorTest {
+public class DependencyGraphCreatorTest {
 
     @Test
     @DisplayName("два модуля, первый зависит от второго")
-    void twoModuleFirstDependsToSecond() {
+    public void twoModuleFirstDependsToSecond() {
         // setup
         var first = createModuleWithClass("aaaa.Class1", "bbbb.Class2");
         var second = createModuleWithClass("bbbb.Class2");
@@ -45,7 +45,7 @@ class DependencyGraphCreatorTest {
 
     @Test
     @DisplayName("три модуля, первый зависит от двух других")
-    void threeModulesOneDependsToTwo() {
+    public void threeModulesOneDependsToTwo() {
         // setup
         var first = createModuleWithClass("aaaa.Class1", "bbbb.Class2", "cccc.Class3");
         var second = createModuleWithClass("bbbb.Class2");
@@ -72,7 +72,7 @@ class DependencyGraphCreatorTest {
 
     @Test
     @DisplayName("три модуля, которые последовательно зависят друг от друга")
-    void threeModulesSequenceDependency() {
+    public void threeModulesSequenceDependency() {
         // setup
         var first = createModuleWithClass("aaaa.Class1", "bbbb.Class2");
         var second = createModuleWithClass("bbbb.Class2", "cccc.Class3");
@@ -110,7 +110,7 @@ class DependencyGraphCreatorTest {
         assertAllClassFileContainsInClasses(filledFrom, classes);
     }
 
-    public void assertAllClassFileContainsInClasses(List<ClassFile> classFiles, Set<Class> classes) {
+    private void assertAllClassFileContainsInClasses(List<ClassFile> classFiles, Set<Class> classes) {
         var classNames = classes.stream()
                                 .map(Class::name)
                                 .collect(Collectors.toSet());
