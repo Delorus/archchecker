@@ -15,9 +15,12 @@ public final class Object {
 
     private String alias;
     private List<Field> fields = new ArrayList<>();
+    private List<Relation> relations = new ArrayList<>();
 
-    public Object(PlantUMLBuilder.ObjectBuilder parent, String name) {
+    Object(PlantUMLBuilder.ObjectBuilder parent, String name) {
         this.parent = parent;
+
+        assert name != null && !name.isBlank();
         this.name = name;
     }
 
@@ -47,12 +50,12 @@ public final class Object {
         builder.append("object");
         builder.append(' ');
 
-        if (name.contains(" ")) {
-            builder.append('"');
+        if (isNameValidRef()) {
             builder.append(name);
-            builder.append('"');
         } else {
+            builder.append('"');
             builder.append(name);
+            builder.append('"');
         }
 
         if (alias != null && !alias.isBlank()) {
@@ -63,19 +66,47 @@ public final class Object {
         if (!fields.isEmpty()) {
             builder.append(" {\n");
 
-            for (Field field : fields) {
-                field.renderTo(builder);
-            }
+            fields.forEach(field -> field.renderTo(builder));
 
             builder.append("}");
         }
 
         builder.append('\n');
+
+        relations.forEach(relation -> relation.renderTo(builder));
     }
 
     private void validate() {
-        if (name.contains(" ") && (alias == null || alias.isBlank())) {
+        if (!isNameValidRef() && (alias == null || alias.isBlank())) {
             throw new IllegalArgumentException(String.format("Object with composite fullName '%s' must have alias", this.name));
         }
+    }
+
+    private boolean isNameValidRef() {
+        return !name.contains(" ");
+    }
+
+    private String ref() {
+        return isNameValidRef() ? name : alias;
+    }
+
+    public void verticalRelateTo(Object to) {
+        var relation = new Relation(ref(), to.ref(), RelationDirection.VERTICAL, ArrowStyle.ARROW);
+
+        relations.add(relation);
+    }
+
+    public Object verticalRelateTo2(String to) {
+        var relation = new Relation(ref(), to, RelationDirection.VERTICAL, ArrowStyle.ARROW);
+
+        relations.add(relation);
+        return this;
+    }
+
+    public Object horizontalRelateTo(Object to) {
+        var relation = new Relation(ref(), to.ref(), RelationDirection.HORIZONTAL, ArrowStyle.ARROW);
+
+        relations.add(relation);
+        return this;
     }
 }

@@ -56,6 +56,14 @@ public abstract class PlantUMLBuilder<T extends PlantUMLBuilder> {
             return new Object(this, name);
         }
 
+        public ObjectBuilder verticalRelateFromTo(String test, String test2) {
+            return this;
+        }
+
+        public ObjectBuilder bindTwoObjects() {
+            return this;
+        }
+
         @Override
         protected ObjectBuilder self() {
             return this;

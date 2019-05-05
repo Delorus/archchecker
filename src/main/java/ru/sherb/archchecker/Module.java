@@ -185,6 +185,13 @@ public final class Module {
                 + "]}";
     }
 
+    /**
+     * Ручное добавление классов в модуль, нужно для тестирования.
+     */
+    void setClasses(List<Class> classes) {
+        this.classes = classes;
+    }
+
     static final class SerializeAgent {
         String path;
         String name;

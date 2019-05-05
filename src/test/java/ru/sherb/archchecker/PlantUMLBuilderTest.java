@@ -1,5 +1,6 @@
-package ru.sherb;
+package ru.sherb.archchecker;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.sherb.archchecker.uml.Modifier;
 import ru.sherb.archchecker.uml.PlantUMLBuilder;
@@ -108,6 +109,58 @@ class PlantUMLBuilderTest {
                 .endObject()
                 .end();
 
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("объектная диаграмма с простой вертикальной связью")
+    void objectDiagramWithSimpleVerticalDependency() {
+        var builder = PlantUMLBuilder.newObjectDiagram();
+        var expected = "@startuml\n" +
+                "object test {\n" +
+                "simple field\n" +
+                "}\n" +
+                "test --> test2\n" +
+                "object test2\n" +
+                "@enduml\n";
+
+        var objectDiagram = builder.start();
+        var testObj = objectDiagram
+                .startObject("test")
+                .addField("simple field");
+        var test2 = objectDiagram.startObject("test2");
+        testObj.verticalRelateTo(test2);
+
+        testObj.endObject();
+        test2.endObject();
+
+        var actual = builder.end();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("объектная диаграмма с простой горизонтальной связью")
+    void objectDiagramWithSimpleHorizontalDependency() {
+        var builder = PlantUMLBuilder.newObjectDiagram();
+        var expected = "@startuml\n" +
+                "object test {\n" +
+                "simple field\n" +
+                "}\n" +
+                "test -> test2\n" +
+                "object test2\n" +
+                "@enduml\n";
+
+        var objectDiagram = builder.start();
+        var testObj = objectDiagram
+                .startObject("test")
+                .addField("simple field");
+        var test2 = objectDiagram.startObject("test2");
+        testObj.horizontalRelateTo(test2);
+
+        testObj.endObject();
+        test2.endObject();
+
+        var actual = builder.end();
         assertEquals(expected, actual);
     }
 }

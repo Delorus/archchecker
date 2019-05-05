@@ -17,7 +17,6 @@ public final class ModuleAnalyst {
         this.environment = environment;
     }
 
-
     public Map<Module, Double> countModulesStability() {
         Map<Module, List<QualifiedName>> modulesInputDeps = new HashMap<>(environment.size());
         Map<Module, List<QualifiedName>> modulesOutputDeps = new HashMap<>(environment.size());

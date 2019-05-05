@@ -16,7 +16,7 @@ import java.util.zip.GZIPOutputStream;
  * @author maksim
  * @since 28.04.19
  */
-public class ModuleToJSONSerializer {
+public final class ModuleToJSONSerializer {
 
     public void saveAsJSON(Path path, List<Module> modules) throws IOException {
         try (var writer = new GZIPOutputStream(
