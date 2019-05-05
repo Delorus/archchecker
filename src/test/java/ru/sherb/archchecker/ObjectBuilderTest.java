@@ -15,22 +15,29 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ObjectBuilderTest {
 
     @Test
+    @DisplayName("создание простого объекта")
     void simpleObjectDiagram() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
+        // when
         var actual = builder
                 .start()
                 .startObject("test")
                 .endObject()
                 .end();
 
+        // then
         assertEquals("@startuml\nobject test\n@enduml\n", actual);
     }
 
     @Test
+    @DisplayName("создание объекта с псевдонимом")
     void objectDiagramWithAlias() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
+        // when
         var actual = builder
                 .start()
                 .startObject("test object")
@@ -38,25 +45,29 @@ class ObjectBuilderTest {
                 .endObject()
                 .end();
 
+        // then
         assertEquals("@startuml\nobject \"test object\" as obj\n@enduml\n", actual);
     }
 
     @Test
+    @DisplayName("если создать объект с именем, состоящим из нескольких слов без псевдонима, то будет ошибка")
     void objectDiagramWithoutAliasAndCompositeName() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
-        var actual = builder
-                .start()
-                .startObject("test object");
-
+        // expect
         assertThrows(IllegalArgumentException.class, () -> {
-            actual.endObject()
-                  .end();
+            builder.start()
+                   .startObject("test object")
+                   .endObject()
+                   .end();
         });
     }
 
     @Test
+    @DisplayName("создание сложного объекта с разнотипными полями")
     void objectDiagramWithSeveralFields() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
                 "object test {\n" +
@@ -67,6 +78,7 @@ class ObjectBuilderTest {
                 "}\n" +
                 "@enduml\n";
 
+        // when
         var actual = builder
                 .start()
                 .startObject("test")
@@ -77,11 +89,14 @@ class ObjectBuilderTest {
                 .endObject()
                 .end();
 
+        // then
         assertEquals(expected, actual);
     }
 
     @Test
+    @DisplayName("создание сложного объекта с псевдонимом")
     void objectDiagramWithFieldAndAlias() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
                 "object \"test object\" as obj {\n" +
@@ -89,6 +104,7 @@ class ObjectBuilderTest {
                 "}\n" +
                 "@enduml\n";
 
+        // when
         var actual = builder
                 .start()
                 .startObject("test object")
@@ -97,12 +113,14 @@ class ObjectBuilderTest {
                 .endObject()
                 .end();
 
+        // then
         assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("объектная диаграмма с простой вертикальной связью")
     void objectDiagramWithSimpleVerticalDependency() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
                 "object test {\n" +
@@ -112,10 +130,13 @@ class ObjectBuilderTest {
                 "object test2\n" +
                 "@enduml\n";
 
+        // when
         var objectDiagram = builder.start();
+
         var testObj = objectDiagram
                 .startObject("test")
                 .addField("simple field");
+
         var test2 = objectDiagram.startObject("test2");
         testObj.verticalRelateTo(test2);
 
@@ -123,12 +144,15 @@ class ObjectBuilderTest {
         test2.endObject();
 
         var actual = builder.end();
+
+        // then
         assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("объектная диаграмма с простой горизонтальной связью")
     void objectDiagramWithSimpleHorizontalDependency() {
+        // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
                 "object test {\n" +
@@ -138,10 +162,13 @@ class ObjectBuilderTest {
                 "object test2\n" +
                 "@enduml\n";
 
+        // when
         var objectDiagram = builder.start();
+
         var testObj = objectDiagram
                 .startObject("test")
                 .addField("simple field");
+
         var test2 = objectDiagram.startObject("test2");
         testObj.horizontalRelateTo(test2);
 
@@ -149,6 +176,8 @@ class ObjectBuilderTest {
         test2.endObject();
 
         var actual = builder.end();
+
+        // then
         assertEquals(expected, actual);
     }
 }
