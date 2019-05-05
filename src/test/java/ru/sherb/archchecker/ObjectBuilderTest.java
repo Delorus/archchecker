@@ -12,19 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author maksim
  * @since 27.04.19
  */
-class PlantUMLBuilderTest {
-
-    @Test
-    void simpleComponentDiagram() {
-        var builder = PlantUMLBuilder.newComponentDiagram();
-
-        var diagram = builder
-                .start()
-                .pkg("hello")
-                .end();
-
-        assertEquals("@startuml\npackage hello\n@enduml\n", diagram);
-    }
+class ObjectBuilderTest {
 
     @Test
     void simpleObjectDiagram() {
