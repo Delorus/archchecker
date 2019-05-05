@@ -7,7 +7,7 @@ import java.util.List;
  * @author maksim
  * @since 27.04.19
  */
-public final class Object {
+public final class Object implements AutoCloseable {
 
     private final PlantUMLBuilder.ObjectBuilder parent;
 
@@ -90,14 +90,8 @@ public final class Object {
         return isNameValidRef() ? name : alias;
     }
 
-    public void verticalRelateTo(Object to) {
+    public Object verticalRelateTo(Object to) {
         var relation = new Relation(ref(), to.ref(), RelationDirection.VERTICAL, ArrowStyle.ARROW);
-
-        relations.add(relation);
-    }
-
-    public Object verticalRelateTo2(String to) {
-        var relation = new Relation(ref(), to, RelationDirection.VERTICAL, ArrowStyle.ARROW);
 
         relations.add(relation);
         return this;
@@ -108,5 +102,10 @@ public final class Object {
 
         relations.add(relation);
         return this;
+    }
+
+    @Override
+    public void close() {
+        endObject();
     }
 }
