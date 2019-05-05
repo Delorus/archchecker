@@ -192,6 +192,10 @@ public final class ModuleFile {
         this.classes = classes;
     }
 
+    List<ClassFile> getClasses() {
+        return this.classes;
+    }
+
     static final class SerializeAgent {
         String path;
         String name;

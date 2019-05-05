@@ -1,18 +1,16 @@
 package ru.sherb.archchecker.analysis;
 
-import ru.sherb.archchecker.java.ModuleFile;
-
 /**
  * @author maksim
  * @since 23.04.19
  */
 public final class ModuleInfo {
 
-    private final ModuleFile module;
+    private final Module module;
 
     private double stability;
 
-    public ModuleInfo(ModuleFile module) {
+    public ModuleInfo(Module module) {
         this.module = module;
     }
 

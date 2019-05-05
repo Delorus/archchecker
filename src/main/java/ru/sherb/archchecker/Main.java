@@ -1,8 +1,10 @@
 package ru.sherb.archchecker;
 
+import ru.sherb.archchecker.analysis.Module;
 import ru.sherb.archchecker.analysis.ModuleAnalyst;
 import ru.sherb.archchecker.analysis.ModuleInfo;
 import ru.sherb.archchecker.analysis.PlantUMLSerializer;
+import ru.sherb.archchecker.java.DependencyGraphCreator;
 import ru.sherb.archchecker.java.ModuleFile;
 import ru.sherb.archchecker.java.ModuleToJSONSerializer;
 
@@ -32,8 +34,9 @@ public final class Main {
         var jsonSerializer = new ModuleToJSONSerializer();
         jsonSerializer.saveAsJSON(root.resolve(".module_infos.json"), modules);
 
-        ModuleAnalyst analyst = new ModuleAnalyst(modules);
-        Map<ModuleFile, Double> stabilities = analyst.countModulesStability();
+        var graphCreator = new DependencyGraphCreator(modules);
+        ModuleAnalyst analyst = new ModuleAnalyst(graphCreator.createDependsGraph());
+        var stabilities = analyst.countModulesStability();
 
         List<ModuleInfo> infos = toModuleInfos(stabilities);
         PlantUMLSerializer serializer = new PlantUMLSerializer(infos);
@@ -99,7 +102,7 @@ public final class Main {
         return cur.endsWith("build.gradle.kts") || cur.endsWith("pom.xml") || cur.endsWith("build.gradle");
     }
 
-    private static List<ModuleInfo> toModuleInfos(Map<ModuleFile, Double> stabilities) {
+    private static List<ModuleInfo> toModuleInfos(Map<Module, Double> stabilities) {
         return stabilities.entrySet().stream()
                           .map(stability -> {
                               var info = new ModuleInfo(stability.getKey());

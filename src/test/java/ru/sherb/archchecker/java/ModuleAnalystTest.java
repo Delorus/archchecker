@@ -2,16 +2,15 @@ package ru.sherb.archchecker.java;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.sherb.archchecker.analysis.Class;
+import ru.sherb.archchecker.analysis.Module;
 import ru.sherb.archchecker.analysis.ModuleAnalyst;
 
-import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * TODO отцепить от java
  *
  * @author maksim
  * @since 04.05.19
@@ -22,8 +21,10 @@ class ModuleAnalystTest {
     @DisplayName("два модуля, первый зависит от второго")
     void twoModuleFirstDependsToSecond() {
         // setup
-        var first = createModuleWithClass("first.Class1", "second.Class2");
-        var second = createModuleWithClass("second.Class2");
+        var first = createModuleWithClass("first", "first.Class1");
+        var second = createModuleWithClass("second", "second.Class2");
+
+        join(first).with(second).on("first.Class1", "second.Class2");
 
         // when
         var analyst = new ModuleAnalyst(List.of(first, second));
@@ -35,12 +36,15 @@ class ModuleAnalystTest {
     }
 
     @Test
-    @DisplayName("три модуля, один зависит от двух других")
+    @DisplayName("три модуля, первый зависит от двух других")
     void threeModulesOneDependsToTwo() {
         // setup
-        var first = createModuleWithClass("first.Class1", "second.Class2", "third.Class3");
-        var second = createModuleWithClass("second.Class2");
-        var third = createModuleWithClass("third.Class3");
+        var first = createModuleWithClass("first", "first.Class1");
+        var second = createModuleWithClass("second", "second.Class2");
+        var third = createModuleWithClass("third", "third.Class3");
+
+        join(first).with(second).on("first.Class1", "second.Class2")
+                   .with(third).on("first.Class1", "third.Class3");
 
         // when
         var analyst = new ModuleAnalyst(List.of(first, second, third));
@@ -56,9 +60,12 @@ class ModuleAnalystTest {
     @DisplayName("три модуля, которые последовательно зависят друг от друга")
     void threeModulesSequenceDependency() {
         // setup
-        var first = createModuleWithClass("first.Class1", "second.Class2");
-        var second = createModuleWithClass("second.Class2", "third.Class3");
-        var third = createModuleWithClass("third.Class3");
+        var first = createModuleWithClass("first", "first.Class1");
+        var second = createModuleWithClass("second", "second.Class2");
+        var third = createModuleWithClass("third", "third.Class3");
+
+        join(first).with(second).on("first.Class1", "second.Class2");
+        join(second).with(third).on("second.Class2", "third.Class3");
 
         // when
         var analyst = new ModuleAnalyst(List.of(first, second, third));
@@ -70,24 +77,44 @@ class ModuleAnalystTest {
         assertEquals(0.0, (double) modulesStability.get(third));
     }
 
-    private ModuleFile createModuleWithClass(String className, String... imports) {
-        var name = new QualifiedName(className);
-
-        var module = new ModuleFile(Path.of("test", name.firstPackage()));
-        var builder = ClassFile
-                .builder()
-                .module(module)
-                .name(name.simpleName())
-                .pkg(name.pkg().toString());
-
-        for (String impt : imports) {
-            builder.addImport(impt);
-        }
-
-        var cls1 = builder.build();
-
-        module.setClasses(Collections.singletonList(cls1));
+    private Module createModuleWithClass(String moduleName, String className) {
+        var module = new Module(moduleName);
+        var cls = new Class(className);
+        module.addClass(cls);
 
         return module;
+    }
+
+    private Joiner join(Module module) {
+        return new Joiner(module);
+    }
+
+    private static class Joiner {
+        private final Module module;
+
+        private Joiner(Module module) {
+            this.module = module;
+        }
+
+        public JoinTwoModules with(Module another) {
+            return new JoinTwoModules(another);
+        }
+
+        private class JoinTwoModules {
+            private final Module another;
+
+            private JoinTwoModules(Module another) {
+                this.another = another;
+            }
+
+            public Joiner on(String firstClass, String secondClass) {
+                var first = module.findClassByName(firstClass).get();
+                var second = another.findClassByName(secondClass).get();
+
+                first.addDependency(second);
+
+                return Joiner.this;
+            }
+        }
     }
 }
