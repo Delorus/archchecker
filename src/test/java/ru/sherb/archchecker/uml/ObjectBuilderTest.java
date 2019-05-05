@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.uml;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
