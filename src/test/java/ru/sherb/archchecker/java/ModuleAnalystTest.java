@@ -1,7 +1,8 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.java;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.sherb.archchecker.analysis.ModuleAnalyst;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -10,6 +11,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
+ * TODO отцепить от java
+ *
  * @author maksim
  * @since 04.05.19
  */
@@ -67,11 +70,11 @@ class ModuleAnalystTest {
         assertEquals(0.0, (double) modulesStability.get(third));
     }
 
-    private Module createModuleWithClass(String className, String... imports) {
+    private ModuleFile createModuleWithClass(String className, String... imports) {
         var name = new QualifiedName(className);
 
-        var module = new Module(Path.of("test", name.firstPackage()));
-        var builder = Class
+        var module = new ModuleFile(Path.of("test", name.firstPackage()));
+        var builder = ClassFile
                 .builder()
                 .module(module)
                 .name(name.simpleName())

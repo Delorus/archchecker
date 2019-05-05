@@ -1,4 +1,7 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.analysis;
+
+import ru.sherb.archchecker.java.ModuleFile;
+import ru.sherb.archchecker.java.QualifiedName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,22 +14,22 @@ import java.util.Map;
  */
 public final class ModuleAnalyst {
 
-    private final List<Module> environment;
+    private final List<ModuleFile> environment;
 
-    public ModuleAnalyst(List<Module> environment) {
+    public ModuleAnalyst(List<ModuleFile> environment) {
         this.environment = environment;
     }
 
-    public Map<Module, Double> countModulesStability() {
-        Map<Module, List<QualifiedName>> modulesInputDeps = new HashMap<>(environment.size());
-        Map<Module, List<QualifiedName>> modulesOutputDeps = new HashMap<>(environment.size());
+    public Map<ModuleFile, Double> countModulesStability() {
+        Map<ModuleFile, List<QualifiedName>> modulesInputDeps = new HashMap<>(environment.size());
+        Map<ModuleFile, List<QualifiedName>> modulesOutputDeps = new HashMap<>(environment.size());
 
-        for (Module module : environment) {
+        for (ModuleFile module : environment) {
             List<QualifiedName> deps = module.findDependenciesFrom(environment);
             modulesInputDeps.put(module, deps);
 
             List<QualifiedName> out = new ArrayList<>();
-            for (Module another : environment) {
+            for (ModuleFile another : environment) {
                 if (module.equals(another)) {
                     continue;
                 }
@@ -38,7 +41,7 @@ public final class ModuleAnalyst {
         }
 
 
-        Map<Module, Double> result = new HashMap<>(environment.size());
+        Map<ModuleFile, Double> result = new HashMap<>(environment.size());
         modulesInputDeps.forEach((module, dependencies) -> {
             var fanOut = dependencies.size();
             var fanIn = modulesOutputDeps.get(module).size();

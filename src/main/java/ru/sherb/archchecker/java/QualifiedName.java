@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.java;
 
 import java.util.Arrays;
 

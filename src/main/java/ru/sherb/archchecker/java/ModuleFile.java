@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.java;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,15 +16,15 @@ import java.util.stream.Collectors;
  * @author maksim
  * @since 23.04.19
  */
-public final class Module {
+public final class ModuleFile {
 
     private final Path path;
 
     private final String name;
 
-    private List<Class> classes;
+    private List<ClassFile> classes;
 
-    public Module(Path path) {
+    public ModuleFile(Path path) {
         this.path = path;
         this.name = path.getFileName().toString();
     }
@@ -33,23 +33,23 @@ public final class Module {
         return name;
     }
 
-    public List<QualifiedName> findDependenciesFrom(Module... environment) {
+    public List<QualifiedName> findDependenciesFrom(ModuleFile... environment) {
 
         return findDependenciesFrom(Arrays.asList(environment));
     }
 
-    public List<QualifiedName> findDependenciesFrom(Iterable<Module> environment) {
+    public List<QualifiedName> findDependenciesFrom(Iterable<ModuleFile> environment) {
         ensureLoad();
 
         List<QualifiedName> dependencies = new ArrayList<>();
-        for (Module module : environment) {
+        for (ModuleFile module : environment) {
             if (this.equals(module)) {
                 continue;
             }
 
             module.ensureLoad();
 
-            for (Class cls : classes) {
+            for (ClassFile cls : classes) {
                 dependencies.addAll(cls.findImportsFrom(module.classes));
             }
         }
@@ -69,7 +69,7 @@ public final class Module {
         load();
     }
 
-    private List<Class> loadClasses() {
+    private List<ClassFile> loadClasses() {
         Path classpath = this.path.resolve("src/main/java");
 
         try (var walker = Files.walk(classpath)) {
@@ -88,9 +88,9 @@ public final class Module {
         }
     }
 
-    private Optional<Class> loadClass(Path path) {
+    private Optional<ClassFile> loadClass(Path path) {
         try (var lines = Files.lines(path)) {
-            var builder = Class
+            var builder = ClassFile
                     .builder()
                     .module(this)
                     .name(trimNameFromFile(path.getFileName()));
@@ -162,7 +162,7 @@ public final class Module {
             return false;
         }
 
-        Module module = (Module) o;
+        ModuleFile module = (ModuleFile) o;
         return path.equals(module.path)
                 && name.equals(module.name);
     }
@@ -177,9 +177,9 @@ public final class Module {
         return "Module{"
                 + path
                 + ", classes=["
-                + Objects.requireNonNullElse(classes, Collections.<Class>emptyList())
+                + Objects.requireNonNullElse(classes, Collections.<ClassFile>emptyList())
                          .stream()
-                         .map(Class::fullName)
+                         .map(ClassFile::fullName)
                          .map(QualifiedName::toString)
                          .collect(Collectors.joining("; "))
                 + "]}";
@@ -188,30 +188,30 @@ public final class Module {
     /**
      * Ручное добавление классов в модуль, нужно для тестирования.
      */
-    void setClasses(List<Class> classes) {
+    void setClasses(List<ClassFile> classes) {
         this.classes = classes;
     }
 
     static final class SerializeAgent {
         String path;
         String name;
-        List<Class.SerializeAgent> classes;
+        List<ClassFile.SerializeAgent> classes;
 
-        static SerializeAgent from(Module module) {
+        static SerializeAgent from(ModuleFile module) {
             var agent = new SerializeAgent();
 
             agent.name = module.name();
             agent.path = module.path.toString();
             agent.classes = module.classes
                     .stream()
-                    .map(Class.SerializeAgent::from)
+                    .map(ClassFile.SerializeAgent::from)
                     .collect(Collectors.toList());
 
             return agent;
         }
 
-        Module toModule() {
-            var module = new Module(Path.of(path));
+        ModuleFile toModule() {
+            var module = new ModuleFile(Path.of(path));
             module.classes = classes
                     .stream()
                     .map(jsonClass -> jsonClass.toClass(module))
@@ -236,11 +236,11 @@ public final class Module {
             this.name = name;
         }
 
-        public List<Class.SerializeAgent> getClasses() {
+        public List<ClassFile.SerializeAgent> getClasses() {
             return classes;
         }
 
-        public void setClasses(List<Class.SerializeAgent> classes) {
+        public void setClasses(List<ClassFile.SerializeAgent> classes) {
             this.classes = classes;
         }
     }

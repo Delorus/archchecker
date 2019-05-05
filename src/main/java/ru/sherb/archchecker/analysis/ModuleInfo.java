@@ -1,4 +1,6 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.analysis;
+
+import ru.sherb.archchecker.java.ModuleFile;
 
 /**
  * @author maksim
@@ -6,11 +8,11 @@ package ru.sherb.archchecker;
  */
 public final class ModuleInfo {
 
-    private final Module module;
+    private final ModuleFile module;
 
     private double stability;
 
-    public ModuleInfo(Module module) {
+    public ModuleInfo(ModuleFile module) {
         this.module = module;
     }
 

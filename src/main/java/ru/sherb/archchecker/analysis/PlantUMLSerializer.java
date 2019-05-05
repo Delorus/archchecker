@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.analysis;
 
 import ru.sherb.archchecker.uml.PlantUMLBuilder;
 
