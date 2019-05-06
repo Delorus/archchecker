@@ -75,19 +75,3 @@ deploy:jdk11:
     paths:
     - target/staging
   image: maven:3.6.1-jdk-11
-
-
-pages:
-  image: busybox:latest
-  stage: deploy
-  script:
-    # Because Maven appends the artifactId automatically to the staging path if you did define a parent pom,
-    # you might need to use `mv target/staging/YOUR_ARTIFACT_ID public` instead.
-    - mv target/staging public
-  dependencies:
-    - deploy:jdk11
-  artifacts:
-    paths:
-    - public
-  only:
-    - master
