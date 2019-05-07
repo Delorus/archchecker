@@ -1,0 +1,43 @@
+@startuml
+component uml <<uml>> [
+    создание uml-диаграмм
+]
+component report <<report>> [
+    варианты представления
+    результатов анализа
+]
+component analysis <<analysis>> [
+    анализ зависимостей
+]
+component java <<java>> [
+    представление исходных
+    файлов программ
+]
+[uml] <-- [report] : PlantUMLBuilder
+[analysis] <-- [report] : ReportViewer
+[analysis] <--[java] : ModuleProvider
+[analysis] - Main: doAnalitics(path)
+
+note top of analysis
+    Пакет не зависит ни от чего
+    и использует интерфес ModuleProvider
+    для получения информации о модулях.
+
+    ReportViewer - интерфес, который будет
+    реализовываться в зависимых модулях
+    для представления результата анализа
+end note
+note top of uml
+    PlantUMLBuilder - API для построения
+    диаграммы plantUML
+end note
+note bottom of Main
+    Main создает один объект
+    который является точкой входа в аналитику.
+
+    Например:
+     Analytics
+        .doAnalitics(
+            new PomModuleProvider("myAwesomeProject"));
+end note
+@enduml

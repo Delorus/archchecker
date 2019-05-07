@@ -1,0 +1,18 @@
+@startuml
+component uml <<uml>> [
+    создание uml-диаграмм
+]
+component analysis <<analysis>> [
+    анализ зависимостей
+]
+component java <<java>> [
+    представление исходных
+    файлов программ
+]
+[uml] <-- [analysis] : Object.java
+[uml] <-- [analysis] : PlantUMLBuilder.java
+[analysis] <--[java] : Class.java
+[analysis] <--[java] : Module.java
+Main - [java]
+Main - [analysis]
+@enduml
