@@ -1,6 +1,5 @@
 package ru.sherb.archchecker.java;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.sherb.archchecker.analysis.Class;
@@ -10,7 +9,6 @@ import ru.sherb.archchecker.analysis.ModuleAnalyst;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -77,12 +75,6 @@ public class ModuleAnalystTest {
         assertEquals(1.0, (double) modulesStability.get(first));
         assertEquals(0.5, (double) modulesStability.get(second));
         assertEquals(0.0, (double) modulesStability.get(third));
-    }
-
-    @Test
-    @Disabled
-    public void wrongTest() {
-        assertTrue(false);
     }
 
     private Module createModuleWithClass(String moduleName, String className) {

@@ -80,7 +80,7 @@ public final class Object implements AutoCloseable {
         return illegalChars.matcher(name).replaceAll("_");
     }
 
-    private String ref() {
+    String ref() {
         return existAlias() ? alias : formatName();
     }
 
@@ -88,15 +88,8 @@ public final class Object implements AutoCloseable {
         return alias != null;
     }
 
-    public Object verticalRelateTo(Object to) {
-        var relation = new Relation(ref(), to.ref(), RelationDirection.VERTICAL, ArrowStyle.ARROW);
-
-        relations.add(relation);
-        return this;
-    }
-
-    public Object horizontalRelateTo(Object to) {
-        var relation = new Relation(ref(), to.ref(), RelationDirection.HORIZONTAL, ArrowStyle.ARROW);
+    public Object relateTo(Object to) {
+        var relation = new Relation(ref(), to.ref(), parent.positioner.directionBetween(this, to), ArrowStyle.ARROW);
 
         relations.add(relation);
         return this;

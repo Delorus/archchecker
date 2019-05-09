@@ -117,40 +117,8 @@ public class ObjectBuilderTest {
     }
 
     @Test
-    @DisplayName("объектная диаграмма с простой вертикальной связью")
-    public void objectDiagramWithSimpleVerticalDependency() {
-        // setup
-        var builder = PlantUMLBuilder.newObjectDiagram();
-        var expected = "@startuml\n" +
-                "object test {\n" +
-                "simple field\n" +
-                "}\n" +
-                "test --> test2\n" +
-                "object test2\n" +
-                "@enduml\n";
-
-        // when
-        var objectDiagram = builder.start();
-
-        var testObj = objectDiagram
-                .startObject("test")
-                .addField("simple field");
-
-        var test2 = objectDiagram.startObject("test2");
-        testObj.verticalRelateTo(test2);
-
-        testObj.endObject();
-        test2.endObject();
-
-        var actual = builder.end();
-
-        // then
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("объектная диаграмма с простой горизонтальной связью")
-    public void objectDiagramWithSimpleHorizontalDependency() {
+    @DisplayName("объектная диаграмма с простой связью")
+    public void objectDiagramWithSimpleDependency() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
         var expected = "@startuml\n" +
@@ -173,6 +141,52 @@ public class ObjectBuilderTest {
 
         testObj.endObject();
         test2.endObject();
+
+        var actual = builder.end();
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("горизонтальная связь между объектами на одной линии и вертикальная между ними")
+    public void objectDiagramHorizontalRelationInOneLineAndVerticalBetweenLines() {
+        // setup
+        var builder = PlantUMLBuilder.newObjectDiagram().start();
+        builder.positioner = new ObjectAutoPositioner(3);
+
+        var expected = "@startuml\n" +
+                "object test\n" +
+                "test -> test2\n" +
+                "test -> test3\n" +
+                "test --> test4\n" +
+                "object test2\n" +
+                "test2 --> test4\n" +
+                "object test3\n" +
+                "object test4\n" +
+                "test4 --> test2\n" +
+                "test4 --> test3\n" +
+                "@enduml\n";
+
+        // when
+        var test = builder.startObject("test");
+        var test2 = builder.startObject("test2");
+        var test3 = builder.startObject("test3");
+        var test4 = builder.startObject("test4");
+
+        test.relateTo(test2);
+        test.relateTo(test3);
+        test.relateTo(test4);
+        test.endObject();
+
+        test2.relateTo(test4);
+        test2.endObject();
+
+        test3.endObject();
+
+        test4.relateTo(test2);
+        test4.relateTo(test3);
+        test4.endObject();
 
         var actual = builder.end();
 

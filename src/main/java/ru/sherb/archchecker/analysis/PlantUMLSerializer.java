@@ -45,7 +45,7 @@ public final class PlantUMLSerializer {
         cache.put(module.name(), object);
 
         for (Module dependency : module.allDependencyModules()) {
-            object.horizontalRelateTo(createObjectWithDeps(builder, dependency));
+            object.relateTo(createObjectWithDeps(builder, dependency));
         }
 
         return object;

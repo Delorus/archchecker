@@ -33,8 +33,12 @@ public abstract class PlantUMLBuilder<T extends PlantUMLBuilder> {
 
     public static class ObjectBuilder extends PlantUMLBuilder<ObjectBuilder> {
 
+        ObjectAutoPositioner positioner = new ObjectAutoPositioner(5);
+
         public Object startObject(String name) {
-            return new Object(this, name);
+            var object = new Object(this, name);
+            positioner.addObject(object);
+            return object;
         }
 
         @Override
