@@ -2,6 +2,7 @@ package ru.sherb.archchecker.uml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author maksim
@@ -25,6 +26,8 @@ public final class Object implements AutoCloseable {
     }
 
     public Object alias(String alias) {
+        assert alias != null && !alias.isBlank();
+
         this.alias = alias;
         return this;
     }
@@ -45,22 +48,17 @@ public final class Object implements AutoCloseable {
     }
 
     private void renderTo(StringBuilder builder) {
-        validate();
-
         builder.append("object");
         builder.append(' ');
 
-        if (isNameValidRef()) {
-            builder.append(name);
-        } else {
+        if (existAlias()) {
             builder.append('"');
             builder.append(name);
             builder.append('"');
-        }
-
-        if (alias != null && !alias.isBlank()) {
             builder.append(" as ");
             builder.append(alias);
+        } else {
+            builder.append(formatName());
         }
 
         if (!fields.isEmpty()) {
@@ -76,18 +74,18 @@ public final class Object implements AutoCloseable {
         relations.forEach(relation -> relation.renderTo(builder));
     }
 
-    private void validate() {
-        if (!isNameValidRef() && (alias == null || alias.isBlank())) {
-            throw new IllegalArgumentException(String.format("Object with composite fullName '%s' must have alias", this.name));
-        }
-    }
+    private static final Pattern illegalChars = Pattern.compile("[ \\-.]");
 
-    private boolean isNameValidRef() {
-        return !name.contains(" ");
+    private String formatName() {
+        return illegalChars.matcher(name).replaceAll("_");
     }
 
     private String ref() {
-        return isNameValidRef() ? name : alias;
+        return existAlias() ? alias : formatName();
+    }
+
+    private boolean existAlias() {
+        return alias != null;
     }
 
     public Object verticalRelateTo(Object to) {

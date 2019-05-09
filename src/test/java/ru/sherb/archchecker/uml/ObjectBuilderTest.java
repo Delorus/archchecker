@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author maksim
@@ -48,18 +47,20 @@ public class ObjectBuilderTest {
     }
 
     @Test
-    @DisplayName("если создать объект с именем, состоящим из нескольких слов без псевдонима, то будет ошибка")
+    @DisplayName("нелегальные символы в имени будут заменены на '_', если не указан псевдоним")
     public void objectDiagramWithoutAliasAndCompositeName() {
         // setup
         var builder = PlantUMLBuilder.newObjectDiagram();
 
-        // expect
-        assertThrows(IllegalArgumentException.class, () -> {
-            builder.start()
-                   .startObject("test object")
-                   .endObject()
-                   .end();
-        });
+        // when
+        var actual = builder
+                .start()
+                .startObject("test object")
+                .endObject()
+                .end();
+
+        // then
+        assertEquals("@startuml\nobject test_object\n@enduml\n", actual);
     }
 
     @Test
@@ -168,7 +169,7 @@ public class ObjectBuilderTest {
                 .addField("simple field");
 
         var test2 = objectDiagram.startObject("test2");
-        testObj.horizontalRelateTo(test2);
+        testObj.relateTo(test2);
 
         testObj.endObject();
         test2.endObject();
