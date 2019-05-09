@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.java;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,15 +11,15 @@ import java.util.stream.Collectors;
  * @author maksim
  * @since 23.04.19
  */
-public final class Class {
+public final class ClassFile {
 
-    private final Module module;
+    private final ModuleFile module;
     private final QualifiedName pkg;
     private final String name;
 
     private final Set<QualifiedName> imports;
 
-    private Class(Module module, QualifiedName pkg, String name, Set<QualifiedName> imports) {
+    private ClassFile(ModuleFile module, QualifiedName pkg, String name, Set<QualifiedName> imports) {
         this.module = module;
         this.imports = imports;
         this.pkg = pkg;
@@ -34,15 +34,15 @@ public final class Class {
         return pkg.newWith(name);
     }
 
-    public List<QualifiedName> findImportsFrom(List<Class> classes) {
+    public List<QualifiedName> findImportsFrom(List<ClassFile> classes) {
         return classes.stream()
-                      .map(Class::fullName)
+                      .map(ClassFile::fullName)
                       .filter(imports::contains)
                       .collect(Collectors.toList());
     }
 
     public static final class ClassBuilder {
-        private Module module;
+        private ModuleFile module;
         private QualifiedName pkg;
         private String name;
         private Set<QualifiedName> imports = new HashSet<>();
@@ -50,7 +50,7 @@ public final class Class {
         private ClassBuilder() {
         }
 
-        public ClassBuilder module(Module module) {
+        public ClassBuilder module(ModuleFile module) {
             this.module = module;
             return this;
         }
@@ -70,9 +70,9 @@ public final class Class {
             return this;
         }
 
-        public Class build() {
+        public ClassFile build() {
             validate();
-            return new Class(module, pkg, name, imports);
+            return new ClassFile(module, pkg, name, imports);
         }
 
         private void validate() {
@@ -112,9 +112,9 @@ public final class Class {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Class aClass = (Class) o;
-        return pkg.equals(aClass.pkg) &&
-                name.equals(aClass.name);
+        ClassFile cls = (ClassFile) o;
+        return pkg.equals(cls.pkg) &&
+                name.equals(cls.name);
     }
 
     @Override
@@ -138,7 +138,7 @@ public final class Class {
         String fullName;
         List<String> imports;
 
-        static SerializeAgent from(Class cls) {
+        static SerializeAgent from(ClassFile cls) {
             var agent = new SerializeAgent();
 
             agent.fullName = cls.fullName().toString();
@@ -150,14 +150,14 @@ public final class Class {
             return agent;
         }
 
-        Class toClass(Module module) {
+        ClassFile toClass(ModuleFile module) {
             var fullName = new QualifiedName(this.fullName);
             var imports = this.imports
                     .stream()
                     .map(QualifiedName::new)
                     .collect(Collectors.toSet());
 
-            return new Class(module, fullName.pkg(), fullName.simpleName(), imports);
+            return new ClassFile(module, fullName.pkg(), fullName.simpleName(), imports);
         }
 
         public String getFullName() {

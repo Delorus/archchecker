@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.java;
 
 import java.util.Arrays;
 
@@ -21,6 +21,10 @@ public final class QualifiedName {
     }
 
     public QualifiedName pkg() {
+        if (pieces.length == 1) {
+            return this;
+        }
+
         return new QualifiedName(Arrays.copyOf(pieces, pieces.length - 1));
     }
 
@@ -28,8 +32,8 @@ public final class QualifiedName {
         return this.pieces[this.pieces.length - 1];
     }
 
-    public String mainPackage() {
-        return pieces[2]; //TODO workaround: only for projects whose groupId consist of two package, e.g. ru.sherb
+    public String firstPackage() {
+        return pieces[0];
     }
 
     public QualifiedName newWith(String name) {

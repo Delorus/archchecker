@@ -1,4 +1,4 @@
-package ru.sherb.archchecker;
+package ru.sherb.archchecker.analysis;
 
 /**
  * @author maksim
@@ -24,5 +24,10 @@ public final class ModuleInfo {
 
     public double stability() {
         return stability;
+    }
+
+    //TODO abstraction leak
+    public Module module() {
+        return module;
     }
 }

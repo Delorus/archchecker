@@ -1,5 +1,13 @@
 package ru.sherb.archchecker;
 
+import ru.sherb.archchecker.analysis.Module;
+import ru.sherb.archchecker.analysis.ModuleAnalyst;
+import ru.sherb.archchecker.analysis.ModuleInfo;
+import ru.sherb.archchecker.analysis.PlantUMLSerializer;
+import ru.sherb.archchecker.java.DependencyGraphCreator;
+import ru.sherb.archchecker.java.ModuleFile;
+import ru.sherb.archchecker.java.ModuleToJSONSerializer;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,20 +29,21 @@ public final class Main {
         validate(args);
 
         Path root = Paths.get(args[0]);
-        List<Module> modules = getFromCacheOrLoadModules(root);
+        List<ModuleFile> modules = getFromCacheOrLoadModules(root);
 
         var jsonSerializer = new ModuleToJSONSerializer();
         jsonSerializer.saveAsJSON(root.resolve(".module_infos.json"), modules);
 
-        ModuleAnalyst analyst = new ModuleAnalyst(modules);
-        Map<Module, Double> stabilities = analyst.countModulesStability();
+        var graphCreator = new DependencyGraphCreator(modules);
+        ModuleAnalyst analyst = new ModuleAnalyst(graphCreator.createDependsGraph());
+        var stabilities = analyst.countModulesStability();
 
         List<ModuleInfo> infos = toModuleInfos(stabilities);
         PlantUMLSerializer serializer = new PlantUMLSerializer(infos);
         Files.writeString(Paths.get("./module_infos.puml"), serializer.serialize(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
     }
 
-    private static List<Module> getFromCacheOrLoadModules(Path root) throws IOException {
+    private static List<ModuleFile> getFromCacheOrLoadModules(Path root) throws IOException {
         var modules = loadFromCache(root);
 
         if (modules.isEmpty()) {
@@ -44,7 +53,7 @@ public final class Main {
         return modules;
     }
 
-    private static List<Module> loadFromCache(Path root) throws IOException {
+    private static List<ModuleFile> loadFromCache(Path root) throws IOException {
         try (var caches = Files.find(root, 1,
                 (path, basicFileAttributes) -> path.getFileName().toString().equals(".module_infos.json"))) {
 
@@ -58,10 +67,10 @@ public final class Main {
         }
     }
 
-    private static List<Module> loadFromDir(Path root) throws IOException {
+    private static List<ModuleFile> loadFromDir(Path root) throws IOException {
         return getAllPaths(root)
                 .flatMap(Main::findModule)
-                .peek(Module::load)
+                .peek(ModuleFile::load)
                 .collect(Collectors.toList());
     }
 
@@ -76,13 +85,13 @@ public final class Main {
                 (path, attrs) -> attrs.isDirectory());
     }
 
-    private static Stream<Module> findModule(Path path) {
+    private static Stream<ModuleFile> findModule(Path path) {
         try {
             return Files.walk(path, 1)
                         .filter(Main::isBuildFile)
                         .map(Path::getParent)
                         .distinct()
-                        .map(Module::new);
+                        .map(ModuleFile::new);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -2,12 +2,13 @@ package ru.sherb.archchecker.uml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author maksim
  * @since 27.04.19
  */
-public final class Object {
+public final class Object implements AutoCloseable {
 
     private final PlantUMLBuilder.ObjectBuilder parent;
 
@@ -15,13 +16,18 @@ public final class Object {
 
     private String alias;
     private List<Field> fields = new ArrayList<>();
+    private List<Relation> relations = new ArrayList<>();
 
-    public Object(PlantUMLBuilder.ObjectBuilder parent, String name) {
+    Object(PlantUMLBuilder.ObjectBuilder parent, String name) {
         this.parent = parent;
+
+        assert name != null && !name.isBlank();
         this.name = name;
     }
 
     public Object alias(String alias) {
+        assert alias != null && !alias.isBlank();
+
         this.alias = alias;
         return this;
     }
@@ -42,40 +48,55 @@ public final class Object {
     }
 
     private void renderTo(StringBuilder builder) {
-        validate();
-
         builder.append("object");
         builder.append(' ');
 
-        if (name.contains(" ")) {
+        if (existAlias()) {
             builder.append('"');
             builder.append(name);
             builder.append('"');
-        } else {
-            builder.append(name);
-        }
-
-        if (alias != null && !alias.isBlank()) {
             builder.append(" as ");
             builder.append(alias);
+        } else {
+            builder.append(formatName());
         }
 
         if (!fields.isEmpty()) {
             builder.append(" {\n");
 
-            for (Field field : fields) {
-                field.renderTo(builder);
-            }
+            fields.forEach(field -> field.renderTo(builder));
 
             builder.append("}");
         }
 
         builder.append('\n');
+
+        relations.forEach(relation -> relation.renderTo(builder));
     }
 
-    private void validate() {
-        if (name.contains(" ") && (alias == null || alias.isBlank())) {
-            throw new IllegalArgumentException(String.format("Object with composite fullName '%s' must have alias", this.name));
-        }
+    private static final Pattern illegalChars = Pattern.compile("[ \\-.]");
+
+    private String formatName() {
+        return illegalChars.matcher(name).replaceAll("_");
+    }
+
+    String ref() {
+        return existAlias() ? alias : formatName();
+    }
+
+    private boolean existAlias() {
+        return alias != null;
+    }
+
+    public Object relateTo(Object to) {
+        var relation = new Relation(ref(), to.ref(), parent.positioner.directionBetween(this, to), ArrowStyle.ARROW);
+
+        relations.add(relation);
+        return this;
+    }
+
+    @Override
+    public void close() {
+        endObject();
     }
 }

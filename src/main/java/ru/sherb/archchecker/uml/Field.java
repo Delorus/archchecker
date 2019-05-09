@@ -4,7 +4,7 @@ package ru.sherb.archchecker.uml;
  * @author maksim
  * @since 27.04.19
  */
-public final class Field {
+final class Field {
 
     private final Modifier mod;
     private final String name;

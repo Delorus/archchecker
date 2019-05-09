@@ -6,10 +6,6 @@ package ru.sherb.archchecker.uml;
  */
 public abstract class PlantUMLBuilder<T extends PlantUMLBuilder> {
 
-    public static PlantUMLBuilder<ComponentBuilder> newComponentDiagram() {
-        return new ComponentBuilder();
-    }
-
     public static PlantUMLBuilder<ObjectBuilder> newObjectDiagram() {
         return new ObjectBuilder();
     }
@@ -35,25 +31,14 @@ public abstract class PlantUMLBuilder<T extends PlantUMLBuilder> {
 
     protected abstract T self();
 
-    public static class ComponentBuilder extends PlantUMLBuilder<ComponentBuilder> {
-
-        public ComponentBuilder pkg(String name) {
-            builder.append("package ");
-            builder.append(name);
-            builder.append("\n");
-            return this;
-        }
-
-        @Override
-        protected ComponentBuilder self() {
-            return this;
-        }
-    }
-
     public static class ObjectBuilder extends PlantUMLBuilder<ObjectBuilder> {
 
+        ObjectAutoPositioner positioner = new ObjectAutoPositioner(5);
+
         public Object startObject(String name) {
-            return new Object(this, name);
+            var object = new Object(this, name);
+            positioner.addObject(object);
+            return object;
         }
 
         @Override
