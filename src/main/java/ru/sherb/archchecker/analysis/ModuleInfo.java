@@ -25,4 +25,9 @@ public final class ModuleInfo {
     public double stability() {
         return stability;
     }
+
+    //TODO abstraction leak
+    public Module module() {
+        return module;
+    }
 }

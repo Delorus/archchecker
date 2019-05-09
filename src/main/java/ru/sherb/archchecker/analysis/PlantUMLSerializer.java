@@ -1,8 +1,11 @@
 package ru.sherb.archchecker.analysis;
 
+import ru.sherb.archchecker.uml.Object;
 import ru.sherb.archchecker.uml.PlantUMLBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author maksim
@@ -22,12 +25,30 @@ public final class PlantUMLSerializer {
                 .start();
 
         for (ModuleInfo info : infos) {
-            diagram = diagram.startObject(info.name())
-                             .addField("I = " + info.stability())
-                             .endObject();
+            diagram = createObjectWithDeps(diagram, info.module())
+                    .addField("I = " + info.stability())
+                    .endObject();
         }
 
         return diagram.end();
+    }
+
+    private final Map<String, Object> cache = new HashMap<>();
+
+    private Object createObjectWithDeps(PlantUMLBuilder.ObjectBuilder builder, Module module) {
+        if (cache.containsKey(module.name())) {
+            return cache.get(module.name());
+        }
+
+        var object = builder.startObject(module.name());
+
+        cache.put(module.name(), object);
+
+        for (Module dependency : module.allDependencyModules()) {
+            object.horizontalRelateTo(createObjectWithDeps(builder, dependency));
+        }
+
+        return object;
     }
 
 }
