@@ -1,23 +1,20 @@
 package ru.sherb.archchecker;
 
 import picocli.CommandLine;
-import ru.sherb.archchecker.analysis.Module;
 import ru.sherb.archchecker.analysis.ModuleAnalyst;
-import ru.sherb.archchecker.analysis.ModuleInfo;
-import ru.sherb.archchecker.analysis.PlantUMLSerializer;
 import ru.sherb.archchecker.args.MainCommand;
 import ru.sherb.archchecker.java.DependencyGraphCreator;
 import ru.sherb.archchecker.java.ModuleFile;
 import ru.sherb.archchecker.java.ModuleToJSONSerializer;
+import ru.sherb.archchecker.report.ReportManager;
+import ru.sherb.archchecker.report.ReportSetting;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,20 +25,45 @@ import java.util.stream.Stream;
 public final class Main {
 
     public static void main(String[] args) throws IOException {
-        var command = CommandLine.populateCommand(new MainCommand(), args);
+        MainCommand command = tryParseArgs(args);
 
-        List<ModuleFile> modules = getFromCacheOrLoadModules(command.root);
+        List<ModuleFile> modules = getFromCacheOrLoadModules(command.root); //todo heavy operation
 
         var jsonSerializer = new ModuleToJSONSerializer();
-        jsonSerializer.saveAsJSON(command.root.resolve(".module_infos.json"), modules);
+        jsonSerializer.saveAsJSON(command.root.resolve(".module_infos.json"), modules); //todo heavy operation
 
         var graphCreator = new DependencyGraphCreator(modules);
-        ModuleAnalyst analyst = new ModuleAnalyst(graphCreator.createDependsGraph());
+        ModuleAnalyst analyst = new ModuleAnalyst(graphCreator.createDependsGraph()); //todo heavy operation
         var stabilities = analyst.countModulesStability();
 
-        List<ModuleInfo> infos = toModuleInfos(stabilities);
-        PlantUMLSerializer serializer = new PlantUMLSerializer(infos);
-        Files.writeString(Paths.get("./module_infos.puml"), serializer.serialize(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        var reportSetting = ReportSetting.builder()
+                .includeModules(command.modules)
+                .dependencyDepth(command.depth)
+                .build();
+
+        var diagram = ReportManager.createStabilityDiagram(reportSetting, stabilities);
+        diagram.saveOn(Paths.get("./module_infos.puml"));
+    }
+
+    private static MainCommand tryParseArgs(String[] args) {
+        var cli = new CommandLine(new MainCommand());
+        try {
+            cli.parse(args);
+        } catch (CommandLine.PicocliException e) {
+            System.out.println(e.getMessage());
+            cli.usage(System.out);
+            System.exit(-1);
+        }
+
+        if (cli.isUsageHelpRequested()) {
+            cli.usage(System.out);
+            System.exit(0);
+        } else if (cli.isVersionHelpRequested()) {
+            cli.printVersionHelp(System.out);
+            System.exit(0);
+        }
+
+        return cli.getCommand();
     }
 
     private static List<ModuleFile> getFromCacheOrLoadModules(Path root) throws IOException {
@@ -95,15 +117,5 @@ public final class Main {
     //TODO нужно что-то делать с парент помом, там нет исходников, а файл есть и мы падаем
     private static boolean isBuildFile(Path cur) {
         return cur.endsWith("build.gradle.kts") || cur.endsWith("pom.xml") || cur.endsWith("build.gradle");
-    }
-
-    private static List<ModuleInfo> toModuleInfos(Map<Module, Double> stabilities) {
-        return stabilities.entrySet().stream()
-                          .map(stability -> {
-                              var info = new ModuleInfo(stability.getKey());
-                              info.setStability(stability.getValue());
-                              return info;
-                          })
-                          .collect(Collectors.toList());
     }
 }

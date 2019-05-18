@@ -149,6 +149,40 @@ public class ObjectBuilderTest {
     }
 
     @Test
+    @DisplayName("объектная диаграмма с двумя связями")
+    public void objectDiagramWithTwoDependency() {
+        // setup
+        var builder = PlantUMLBuilder.newObjectDiagram();
+        var expected = "@startuml\n" +
+                "object test {\n" +
+                "simple field\n" +
+                "}\n" +
+                "test -> test2\n" +
+                "object test2\n" +
+                "test2 -> test\n" +
+                "@enduml\n";
+
+        // when
+        var objectDiagram = builder.start();
+
+        var test = objectDiagram
+                .startObject("test")
+                .addField("simple field");
+
+        var test2 = objectDiagram.startObject("test2");
+        test.relateTo(test2);
+        test2.relateTo(test);
+
+        test.endObject();
+        test2.endObject();
+
+        var actual = builder.end();
+
+        // then
+        assertEquals(expected, actual);
+    }
+
+    @Test
     @DisplayName("горизонтальная связь между объектами на одной линии и вертикальная между ними")
     public void objectDiagramHorizontalRelationInOneLineAndVerticalBetweenLines() {
         // setup

@@ -1,4 +1,4 @@
-package ru.sherb.archchecker.analysis;
+package ru.sherb.archchecker.report;
 
 /**
  * @author maksim
@@ -6,12 +6,11 @@ package ru.sherb.archchecker.analysis;
  */
 public final class ModuleInfo {
 
-    private final Module module;
-
+    private final String name;
     private double stability;
 
-    public ModuleInfo(Module module) {
-        this.module = module;
+    public ModuleInfo(String name) {
+        this.name = name;
     }
 
     public void setStability(double stability) {
@@ -19,15 +18,10 @@ public final class ModuleInfo {
     }
 
     public String name() {
-        return module.name();
+        return name;
     }
 
     public double stability() {
         return stability;
-    }
-
-    //TODO abstraction leak
-    public Module module() {
-        return module;
     }
 }

@@ -50,6 +50,6 @@ public class PicocliExample {
 
         // then
         assertEquals(Path.of("path/to/root"), params.root);
-        assertEquals("npo", params.modules.get(0));
+        assertEquals("npo", params.modules.toArray(String[]::new)[0]);
     }
 }

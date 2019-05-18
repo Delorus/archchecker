@@ -84,6 +84,14 @@ public final class Module {
                       .collect(Collectors.toSet());
     }
 
+    public Set<Module> allDependentModules() {
+        return classes.stream()
+                      .map(Class::dependents)
+                      .flatMap(Collection::stream)
+                      .map(Class::module)
+                      .collect(Collectors.toSet());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
