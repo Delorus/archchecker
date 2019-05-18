@@ -1,9 +1,11 @@
 package ru.sherb.archchecker;
 
+import picocli.CommandLine;
 import ru.sherb.archchecker.analysis.Module;
 import ru.sherb.archchecker.analysis.ModuleAnalyst;
 import ru.sherb.archchecker.analysis.ModuleInfo;
 import ru.sherb.archchecker.analysis.PlantUMLSerializer;
+import ru.sherb.archchecker.args.MainCommand;
 import ru.sherb.archchecker.java.DependencyGraphCreator;
 import ru.sherb.archchecker.java.ModuleFile;
 import ru.sherb.archchecker.java.ModuleToJSONSerializer;
@@ -26,13 +28,12 @@ import java.util.stream.Stream;
 public final class Main {
 
     public static void main(String[] args) throws IOException {
-        validate(args);
+        var command = CommandLine.populateCommand(new MainCommand(), args);
 
-        Path root = Paths.get(args[0]);
-        List<ModuleFile> modules = getFromCacheOrLoadModules(root);
+        List<ModuleFile> modules = getFromCacheOrLoadModules(command.root);
 
         var jsonSerializer = new ModuleToJSONSerializer();
-        jsonSerializer.saveAsJSON(root.resolve(".module_infos.json"), modules);
+        jsonSerializer.saveAsJSON(command.root.resolve(".module_infos.json"), modules);
 
         var graphCreator = new DependencyGraphCreator(modules);
         ModuleAnalyst analyst = new ModuleAnalyst(graphCreator.createDependsGraph());
@@ -72,12 +73,6 @@ public final class Main {
                 .flatMap(Main::findModule)
                 .peek(ModuleFile::load)
                 .collect(Collectors.toList());
-    }
-
-    private static void validate(String[] args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Usage: ./archchecker <path_to_project>");
-        }
     }
 
     private static Stream<Path> getAllPaths(Path root) throws IOException {
